@@ -12,14 +12,17 @@ int main() {
     std::cout << "major_semi_axis: " << a.major_semi_axis() << "\n";
     std::cout << "minor_semi_axis: " << a.minor_semi_axis() << "\n";
     std::cout << "center: " << a.center() << "\n";
+
+
     */
-    Circle b(2, Point(1, 1));
+    std::cout << Point(0,1).rotate(M_PI / 2) << "\n";
+    Circle b(1, Point(2, 2));
     //b.scale(2);
     //b.translate(Point(1, 1));
-    //b.rotate(Pi / 2);
+    b.rotate(M_PI, Point(1, 1));
     std::cout << b << "\n";
-    std::cout << "major_semi_axis: " << b.major_semi_axis() << "\n";
-    std::cout << "minor_semi_axis: " << b.minor_semi_axis() << "\n";
+    //std::cout << "major_semi_axis: " << b.major_semi_axis() << "\n";
+    //std::cout << "minor_semi_axis: " << b.minor_semi_axis() << "\n";
 
     /*
     Square c(Point(-2, 0), Point(2, 0), 4);

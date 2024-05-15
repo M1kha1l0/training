@@ -1,7 +1,6 @@
 #include "Point.hpp"
 #include <string>
-
-#define Pi 3.1415926535897932
+#include <math.h>
 
 class Shape {
     public:
@@ -49,10 +48,10 @@ class Elipse : public Shape {
 
         double perimetr() {
             double a = major_semi_axis(), b = minor_semi_axis(); 
-            return 4 * (Pi * a * b + pow(a - b, 2)) / (a + b);
+            return 4 * (M_PI * a * b + pow(a - b, 2)) / (a + b);
         }
         
-        double area() { return Pi * major_semi_axis() * minor_semi_axis(); }
+        double area() { return M_PI * major_semi_axis() * minor_semi_axis(); }
 
         void translate(Point new_center) {
             this->f1 = this->f1.add(new_center.x, new_center.y);
@@ -107,7 +106,7 @@ class Rectangle : public Shape {
         double diagonal() { return sqrt(pow(first_side(), 2) + pow(second_side(), 2)); }
 
         std::vector<Point> vertice () {
-            double alpha = acos((Pi/2) - (abs(A.x - B.x) / diagonal()));
+            double alpha = acos((M_PI/2) - (abs(A.x - B.x) / diagonal()));
             std::vector<Point> result = { Point(A.x + (p/2) * cos(alpha), A.y + (p/2) * sin(alpha)), 
                                           Point(A.x - (p/2) * cos(alpha), A.y - (p/2) * sin(alpha)),
                                           Point(B.x + (p/2) * cos(alpha), B.y + (p/2) * sin(alpha)), 
@@ -163,12 +162,15 @@ class Circle : public Elipse {
         double radius() { return this->r; }
 
         Point center() { return this->o; }
-        double perimetr() { return 2 * Pi * this->r; }
-        double area() { return Pi * pow(this->r, 2); }
+        double perimetr() { return 2 * M_PI * this->r; }
+        double area() { return M_PI * pow(this->r, 2); }
 
         void translate(Point new_center) { this->o += new_center; }
 
-        void rotate(double a, Point p_o = Point(0, 0)) { this->o += Point(p_o.x - this->o.x, p_o.y - this->o.y).rotate(a); }
+        void rotate(double a, Point p_o = Point(0, 0)) { 
+            Point o2 = (o - p_o).rotate(a); //параллельный перенос вектора
+            this->o += o2; 
+        }
 
         void scale(double k) { this->r *= k; }
 

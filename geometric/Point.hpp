@@ -17,8 +17,9 @@ struct Point {
     Point divide(double k) { return Point(this->x / k, this->y / k); }
 
     Point rotate(double a) {
-        return Point(this->x * cos(a) - y * sin(a), 
-                     this->x * sin(a) + y * cos(a));
+        int n = pow(10, 5);
+        return Point(this->x * round(cos(a) * n)/n - y * round(sin(a) * n)/n, 
+                     this->x * round(sin(a) * n)/n + y * round(cos(a) * n)/n);
     }
 
     static double length(Point p) { return sqrt(pow(p.x, 2) + pow(p.y, 2)); }
@@ -27,17 +28,15 @@ struct Point {
 
     double distance(Point p) { return sqrt(pow(this->x - p.x, 2) + pow(this->y - p.y, 2)); }
 
-    Point operator * (double k) { return multiply(k); }
-
-    Point operator + (Point p) { return add(p.x, p.y); }
-
-    void operator += (Point p) { this->x += p.x; this->y += p.y; }
-
     static std::string to_string(Point p) {
         std::string res = "(" + std::to_string(p.x) + ";" + std::to_string(p.y) + ")";
         return res;
     }
 
+    Point operator * (double k) { return multiply(k); }
+    Point operator + (Point p) { return add(p.x, p.y); }
+    Point operator - (Point p) { return substract(p.x, p.y); }
+    void operator += (Point p) { this->x += p.x; this->y += p.y; }
     friend std::ostream& operator <<(std::ostream& os, const Point& p);
 };
 
