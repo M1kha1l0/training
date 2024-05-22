@@ -60,7 +60,6 @@ int main() {
     //Circle t2 = e.inscribed_circle();
     //Circle t3 = e.nine_points_circle();
     //std::cout << t3;
-    std::cout << e.nine_points_circle();
 
     std::cout << e << "\n";
     return 0;
