@@ -18,8 +18,8 @@ struct Point {
 
     Point rotate(double a) {
         int n = pow(10, 5);
-        return Point(this->x * round(cos(a) * n)/n - y * round(sin(a) * n)/n, 
-                     this->x * round(sin(a) * n)/n + y * round(cos(a) * n)/n);
+        return Point(this->x * (round(cos(a) * n)/n) - this->y * (round(sin(a) * n)/n), 
+                     this->x * (round(sin(a) * n)/n) + this->y * (round(cos(a) * n)/n));
     }
 
     static double length(Point p) { return sqrt(pow(p.x, 2) + pow(p.y, 2)); }
@@ -35,7 +35,7 @@ struct Point {
 
     Point operator * (double k) { return multiply(k); }
     Point operator + (Point p) { return add(p.x, p.y); }
-    Point operator - (Point p) { return substract(p.x, p.y); }
+    Point operator - (Point p) { return this->substract(p.x, p.y); }
     void operator += (Point p) { this->x += p.x; this->y += p.y; }
     friend std::ostream& operator <<(std::ostream& os, const Point& p);
 };

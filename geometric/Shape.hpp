@@ -27,8 +27,7 @@ class Elipse : public Shape {
         Elipse(Point p_f1, Point p_f2, double p_r) { 
             this->f1 = p_f1; 
             this->f2 = p_f2; 
-            this->r = p_r; 
-            //std::cout << f1 << " " << f2 << " " << r << "\n";    
+            this->r = p_r;    
         }
 
         std::vector<Point> focuses() {
@@ -59,11 +58,8 @@ class Elipse : public Shape {
         }
         
         void rotate(double a, Point o = Point(0, 0)) {
-            Point p_f1 = Point(this->f1.x - o.x, this->f1.y - o.y),
-                  p_f2 = Point(this->f2.x - o.x, this->f2.y - o.y);
-
-            this->f1 = p_f1.rotate(a);
-            this->f2 = p_f2.rotate(a); 
+            this->f1 = (this->f1 - o).rotate(a) + o;
+            this->f2 = (this->f2 - o).rotate(a) + o; 
         }
         
         void scale(double k) {
@@ -120,19 +116,20 @@ class Rectangle : public Shape {
 
         double area() { return first_side() * second_side(); }
 
-        void translate(Point n_center) { this->A += Point(n_center.x - this->A.x, n_center.y - this->A.y); }
+        void translate(Point n_center) { 
+            Point v(n_center.x - center().x, n_center.y - center().y);
+            this->A += v;
+            this->B += v;
+        }
 
         void rotate(double a, Point o = Point(0, 0)) {
-            Point n_A = Point(this->A.x - o.x, this->A.y - o.y),
-                  n_B = Point(this->B.x - o.x, this->B.y - o.y);
-
-            this->A = n_A.rotate(a);
-            this->B = n_B.rotate(a);
+            this->A = (this->A - o).rotate(a) + o;
+            this->B = (this->B - o).rotate(a) + o;
         }
 
         void scale(double k) {
-            Point n_A = Point(this->A.x - center().x, this->A.y - center().y) * k,
-                  n_B = Point(this->B.x - center().x, this->B.y - center().y) * k;
+            Point n_A = Point(this->A.x - center().x, this->A.y - center().y) * (k/2),
+                  n_B = Point(this->B.x - center().x, this->B.y - center().y) * (k/2);
                 
             this->p *= k;
             this->A += n_A;
@@ -142,7 +139,7 @@ class Rectangle : public Shape {
         void print() { std::cout << "Rectangle:\n    A: " << this->A << "    B: " << this->B << std::endl << "    Side: " << this->p << std::endl; }
 
         std::string to_string() {
-            std::string res = "Rectangle:\n    A: " + Point::to_string(this->A) + "    B: " + Point::to_string(this->B) + "\n    Side: " + std::to_string(this->p) + "\n"; 
+            std::string res = "Rectangle:\n    A: " + Point::to_string(this->A) + "    B: " + Point::to_string(this->B) + "\n    First side: " + std::to_string(first_side()) + "\n    Second side: " + std::to_string(second_side()) + "\n"; 
             return res;
         }
 
@@ -167,9 +164,8 @@ class Circle : public Elipse {
 
         void translate(Point new_center) { this->o += new_center; }
 
-        void rotate(double a, Point p_o = Point(0, 0)) { 
-            Point o2 = (o - p_o).rotate(a); //параллельный перенос вектора
-            this->o += o2; 
+        void rotate(double a, Point p_o = Point(0, 0)) {
+            this->o = (o - p_o).rotate(a) + p_o; 
         }
 
         void scale(double k) { this->r *= k; }
@@ -259,24 +255,21 @@ class Triangle : public Shape {
         double area() { return 0.5 * abs(((this->B.x - this->A.x)*(this->C.y - this->A.y) - (this->C.x - this->A.x)*(this->B.y - this->A.y))); }
 
         void translate(Point new_center) {
-            this->A = this->A.add(new_center.x - center().x, new_center.y - center().y);
-            this->B = this->A.add(new_center.x - center().x, new_center.y - center().y);
-            this->C = this->C.add(new_center.x - center().x, new_center.y - center().y);
+            Point v(new_center.x - center().x, new_center.y - center().y);
+            this->A += v;
+            this->B += v;
+            this->C += v;
         }
 
         void rotate(double a, Point o = Point(0, 0)) {
-            Point p_A = Point(this->A.x - o.x, this->A.y - o.y),
-                  p_B = Point(this->B.x - o.x, this->B.y - o.y),
-                  p_C = Point(this->C.x - o.x, this->C.y - o.y);
-
-            this->A = p_A.rotate(a);
-            this->B = p_B.rotate(a); 
-            this->C = p_C.rotate(a); 
+            this->A = (this->A - o).rotate(a) + o;  
+            this->B = (this->B - o).rotate(a) + o;  
+            this->C = (this->C - o).rotate(a) + o;  
         }
 
         void scale(double k) {
-            this->B = Point(this->B.x - this->A.x, this->B.y - this->A.y) * k;
-            this->C = Point(this->C.x - this->A.x, this->C.y - this->A.y) * k;
+            this->B = this->A + (Point(this->B.x - this->A.x, this->B.y - this->A.y) * k);
+            this->C = this->A + (Point(this->C.x - this->A.x, this->C.y - this->A.y) * k);
         }
 
         std::string to_string() {
@@ -297,11 +290,7 @@ class Square : public Rectangle {
 
     public:
         Square() {}
-        Square(Point p_A, Point p_B, double p_p) {
-            this->A = p_A;
-            this->B = p_B;
-            this->p = p_p;
-        }
+        Square(Point p_A, Point p_B): Rectangle(p_A, p_B, p_A.distance(p_B)), A(p_A), B(p_B), p(p_A.distance(p_B)) {}
 
         double Side() { return p; }
 
@@ -318,16 +307,13 @@ class Square : public Rectangle {
         void translate(Point n_center) { this->A += Point(n_center.x - this->A.x, n_center.y - this->A.y); }
 
         void rotate(double a, Point o = Point(0, 0)) {
-            Point n_A = Point(this->A.x - o.x, this->A.y - o.y),
-                  n_B = Point(this->B.x - o.x, this->B.y - o.y);
-
-            this->A = n_A.rotate(a);
-            this->B = n_B.rotate(a);
+            this->A = (this->A - o).rotate(a) + o;
+            this->B = (this->B - o).rotate(a) + o;
         }
 
         void scale(double k) {
-            Point n_A = Point(this->A.x - center().x, this->A.y - center().y) * k,
-                  n_B = Point(this->B.x - center().x, this->B.y - center().y) * k;
+            Point n_A = Point(this->A.x - center().x, this->A.y - center().y) * (k/2),
+                  n_B = Point(this->B.x - center().x, this->B.y - center().y) * (k/2);
                 
             this->p *= k;
             this->A += n_A;
